@@ -1,5 +1,5 @@
 deployAs:
-  - name: event
+  - name: integration-event
     applicationType: event
     endpoint: /integration-event
     scripts:
@@ -24,7 +24,7 @@ deployAs:
         - key: CTP_SCOPE
           description: commercetools Composable Commerce client scope
           required: true
-  - name: event
+  - name: custom-object-event
     applicationType: event
     endpoint: /custom-object-event
     scripts:

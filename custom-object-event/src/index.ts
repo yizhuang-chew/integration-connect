@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define routes
-app.use('/customObject-event', customObjectEventRoutes);
+app.use('/custom-object-event', customObjectEventRoutes);
 
 // Global error handler
 app.use(errorMiddleware);
