@@ -50,6 +50,8 @@ export const subscriptionController = async (
       messages: messages.length > 0 ? messages : undefined,
     };
 
+    logger.info("SUBSCRIPTION DRAFT", subscriptionDraft);
+
     // Make the API call to create the subscription
     const response = await createApiRoot()
       .subscriptions()
