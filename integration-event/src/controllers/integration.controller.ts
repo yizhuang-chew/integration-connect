@@ -32,11 +32,13 @@ export const post = async (request: Request, response: Response) => {
     const encodedMessageBody = request.body.message.data;
     const messageInput = decodeToJson(encodedMessageBody);
     // const messageNotificationType = messageInput.notificationType;
+    const messageNotificationType = messageInput.notificationType;
+    const messageResourceType = messageInput.resource.typeId;
     const messageType = messageInput.type;
-    // logger.info(`MESSAGE: ${messageNotificationType} ${messageType}` )
+    logger.info(`MESSAGE: ${messageType}`)
 
-    // Get Custom Object
-    const customObject = await customObjectController(messageType);
+    // Get Custom Object - ## Handle if it's multiple messageTypes
+    const customObject = await customObjectController(messageNotificationType,messageResourceType,messageType);
 
     // Validation
     validationController(messageInput, customObject);

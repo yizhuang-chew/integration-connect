@@ -88,6 +88,8 @@ const customObject = {
 
 // Mapping function to process the input
 export const customObjectController = async (
+  messageNotificationType: string,
+  messageResourceType: string,
   messageType: string
 ): Promise<CustomObject> => {
   try {
@@ -96,7 +98,7 @@ export const customObjectController = async (
       .withContainer({ container: 'integration-layer' })
       .get({
         queryArgs: {
-          where: `value(commercetoolsEvent="${messageType}")`,
+          where: `value(eventType="${messageNotificationType}") and value(event="${messageResourceType}") and value(eventMessageTypes="${messageType}")`,
         },
       })
       .execute();
