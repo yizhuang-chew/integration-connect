@@ -62,13 +62,13 @@ export const post = async (request: Request, response: Response) => {
     const projectId = integrationEventDetails.value.projectId;
     const topicType = integrationEventDetails.value.topicType;
 
-    logger.info('topicName', topicName);
-    logger.info('projectId', projectId);
-    logger.info('topicType', topicType);
+    logger.info(`topicName: ${topicName}`);
+    logger.info(`projectId: ${projectId}`);
+    logger.info(`topicType: ${topicType}`);
 
     const changeCustomObject = await retrieveCustomObject(
-      resourceUserProvidedIdentifiers.key,
-      resourceUserProvidedIdentifiers.container
+      resourceUserProvidedIdentifiers.containerAndKey.container,
+      resourceUserProvidedIdentifiers.containerAndKey.key,
     );
     logger.info('CHANGE CUSTOM OBJECT', changeCustomObject);
 
@@ -76,9 +76,9 @@ export const post = async (request: Request, response: Response) => {
     const event = changeCustomObject.value.event;
     const eventMessageTypes = changeCustomObject.value.eventMessageTypes.split(';');
 
-    logger.info('eventType', eventType);
-    logger.info('event', event);
-    logger.info('eventMessageTypes', eventMessageTypes);
+    logger.info(`eventType: ${eventType}`);
+    logger.info(`event: ${event}`);
+    logger.info(`eventMessageTypes: ${eventMessageTypes}`);
 
     // UPDATE SUBSCRIPTION
     const createEventSubscription = await subscriptionController(
