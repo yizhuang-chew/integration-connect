@@ -57,8 +57,7 @@ export const post = async (request: Request, response: Response) => {
 
     logger.info('integrationEventDetails', integrationEventDetails);
 
-    const topicName = integrationEventDetails.value;
-    topicName;
+    const topicName = integrationEventDetails.value.topicName;
     const projectId = integrationEventDetails.value.projectId;
     const topicType = integrationEventDetails.value.topicType;
 
@@ -89,7 +88,9 @@ export const post = async (request: Request, response: Response) => {
       eventMessageTypes
     ); // Properly typed array of strings:);
   
-    logger.info('Event Created', createEventSubscription)
+    logger.info('Event Created', createEventSubscription);
+
+    response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
 
   } catch (error) {
     if (error instanceof CustomError) {
