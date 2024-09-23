@@ -56,14 +56,11 @@ deployAs:
         - key: CLOUD_IDENTIFIER
           description: The identifier of the cloud Region that the Custom Application uses to connect to Composable Commerce. The values map to the actual Merchant Center API URL for that Region
           default: 'gcp-au'
-      securedConfiguration:
-        - key: APPLICATION_ID
-          description: The Custom Application ID is provided when you add a Custom Application in the Merchant Center
-          required: true
-        - key: APPLICATION_URL
-          description: App URL
-        - key: INITIAL_PROJECT_KEY
-          description: Initial Project Key
         - key: ENTRY_POINT_URI_PATH
           description: The Application entry point URI path identified during registration of Custom Application
           required: true
+        - key: CUSTOM_APPLICATION_ID
+          description: The Custom Application ID is provided when you add a Custom Application in the Merchant Center
+          required: true
+        - key: INITIAL_PROJECT_KEY
+          description: Initial Project Key
