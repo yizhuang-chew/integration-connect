@@ -49,7 +49,7 @@ deployAs:
         - key: CTP_SCOPE
           description: commercetools Composable Commerce client scope
           required: true
-- name: mc-custom-object-app
+  - name: mc-custom-object-app
     applicationType: merchant-center-custom-application
     configuration:
       standardConfiguration:
