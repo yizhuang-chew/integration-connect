@@ -1,3 +1,4 @@
+import React from 'react';
 import { FC } from 'react';
 import get from 'lodash/get';
 import { useIntl } from 'react-intl';
