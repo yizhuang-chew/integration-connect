@@ -6,9 +6,7 @@ import { logger } from '../utils/logger.utils';
 const stringToFunction = (transform: string): ((value: any) => any) | null => {
   try {
     // Ensure the transform string is wrapped properly for function construction
-    // For arrow functions, it should be directly used as is
     const wrappedFunction = `(${transform})`;
-    // Evaluate the function string to create a function
     return eval(wrappedFunction);
   } catch (error) {
     logger.error('Error converting string to function:', error);
@@ -40,10 +38,8 @@ export const mappingController = (
         const arrayMatch = field.match(/(.*)\[(["']?)(.*?)\2\]/);
         if (arrayMatch) {
           const [, arrayField, , key] = arrayMatch;
-          // Convert key to number if it is numeric
           const index = isNaN(Number(key)) ? key : Number(key);
           if (acc && typeof acc[arrayField] === 'object') {
-            // Check if acc[arrayField] is an array or an object
             if (Array.isArray(acc[arrayField])) {
               return acc[arrayField][index as number];
             } else {
@@ -89,18 +85,20 @@ export const mappingController = (
       const destFieldPath = destinationField.split('.');
       let destObj: Record<string, any> = output;
 
-      // Traverse the destination path to set the value in the correct place
       for (let i = 0; i < destFieldPath.length - 1; i++) {
         const field = destFieldPath[i];
 
-        // Handle array indexing (e.g., skus[])
-        if (field.endsWith('[]')) {
-          const arrayField = field.slice(0, -2);
+        // Handle array indexing (e.g., requests[0].data.price)
+        const arrayMatch = field.match(/(.*)\[(\d+)\]/); // Match array indexing, e.g., requests[0]
+        if (arrayMatch) {
+          const arrayField = arrayMatch[1]; // e.g., requests
+          const index = Number(arrayMatch[2]); // e.g., 0
+
           if (!destObj[arrayField]) destObj[arrayField] = [];
-          const newObj = {}; // Create a new object if array is empty
-          destObj[arrayField].push(newObj);
-          destObj = newObj; // Move into the newly added object
+          if (!destObj[arrayField][index]) destObj[arrayField][index] = {};
+          destObj = destObj[arrayField][index]; // Move into the object at the specific index
         } else {
+          // Handle standard object fields
           if (!destObj[field]) destObj[field] = {};
           destObj = destObj[field]; // Move into the nested object
         }

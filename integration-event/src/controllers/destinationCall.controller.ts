@@ -14,13 +14,13 @@ export const destinationCallController = async (
   customObject: CustomObject
 ): Promise<Response | null> => {
   try {
-    const destinationUrl = customObject.value.destinationUrl;
+    const accessToken = await authorizationController(customObject);
+
+    const destinationUrl = `${customObject.value.destinationUrl}`;
     logger.info(`Sending request to: ${destinationUrl}`);
     logger.info('Request body:', output);
 
-    const accessToken = await authorizationController(customObject);
-
-    logger.info('TOKEN', accessToken);
+    logger.info(`TOKEN ${accessToken}`);
     const response: Response = await fetch(destinationUrl, {
       method: 'POST',
       headers: {

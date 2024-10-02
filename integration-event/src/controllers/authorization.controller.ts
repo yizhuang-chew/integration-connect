@@ -41,14 +41,28 @@ const refreshAccessToken = async (
   }
 };
 
+async function getStoredAccessToken(
+  accessToken: string
+): Promise<string | null> {
+  return accessToken;
+}
+
 export const authorizationController = async (
   customObject: CustomObject
 ): Promise<string | null> => {
-  const accessToken = await refreshAccessToken(
-    customObject.value.clientId,
-    customObject.value.clientSecret,
-    customObject.value.refreshToken,
-    customObject.value.authUrl
-  );
+  let accessToken: string | null = '';
+  if (customObject.value.authType === 'refresh_token') {
+    accessToken = await refreshAccessToken(
+      customObject.value.clientId,
+      customObject.value.clientSecret,
+      customObject.value.refreshToken,
+      customObject.value.authUrl
+    );
+  } else if (customObject.value.authType === 'access_token') {
+    logger.info('Auth Type = access_token');
+    accessToken = await getStoredAccessToken(
+      customObject.value.accessToken
+    );
+  }
   return accessToken;
 };

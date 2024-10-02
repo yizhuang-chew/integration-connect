@@ -14,6 +14,7 @@ export type FieldMapping = {
       commercetoolsEvent: string;
       destinationSystem: string;
       authUrl: string;
+      authType: string;
       accessToken: string;
       refreshToken: string;
       destinationUrl: string;
