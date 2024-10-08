@@ -71,7 +71,7 @@ export const post = async (request: Request, response: Response) => {
     );
     logger.info('CHANGE CUSTOM OBJECT', changeCustomObject);
 
-    const integrationKey = changeCustomObject.value?.integration?.integrationName;
+    const integrationKey = changeCustomObject.value.integrationName;
     const eventType = changeCustomObject.value.integration?.eventType;
     const event = changeCustomObject.value.integration?.event;
     const eventMessageTypes = changeCustomObject.value.integration?.eventMessageTypes?.split(';');
