@@ -59,4 +59,12 @@ export function doMessageValidation(request: Request) {
       `Incoming message (ID=${messageBody.id}) is about change of ${messageBody.type} created by the current connector. Skip handling the message.`
     );
   }
+
+  const resourceUserProvidedIdentifiers = messageBody.resourceUserProvidedIdentifiers;
+  if(resourceUserProvidedIdentifiers?.containerAndKey?.container !== "integration_layer"){
+    throw new CustomError(
+      HTTP_STATUS_SUCCESS_ACCEPTED,
+      `Custom Object change is not for integration layer.`
+    );
+  }
 }

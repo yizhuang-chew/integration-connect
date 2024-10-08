@@ -71,18 +71,21 @@ export const post = async (request: Request, response: Response) => {
     );
     logger.info('CHANGE CUSTOM OBJECT', changeCustomObject);
 
-    const eventType = changeCustomObject.value.eventType;
-    const event = changeCustomObject.value.event;
-    const eventMessageTypes = changeCustomObject.value.eventMessageTypes.split(';');
+    const integrationKey = changeCustomObject.value?.integration?.integrationName;
+    const eventType = changeCustomObject.value.integration?.eventType;
+    const event = changeCustomObject.value.integration?.event;
+    const eventMessageTypes = changeCustomObject.value.integration?.eventMessageTypes?.split(';');
 
     logger.info(`eventType: ${eventType}`);
     logger.info(`event: ${event}`);
     logger.info(`eventMessageTypes: ${eventMessageTypes}`);
+    logger.info(`integrationKey: ${integrationKey}`);
 
     // UPDATE SUBSCRIPTION
     const createEventSubscription = await subscriptionController(
       projectId,
       topicName,
+      integrationKey,
       eventType,
       event,
       eventMessageTypes

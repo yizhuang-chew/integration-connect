@@ -1,7 +1,7 @@
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
-const CUSTOM_OBJECT_CREATE_SUBSCRIPTION_KEY =
-  'myconnector-customObjectCreateSubscription';
+const CUSTOM_OBJECT_SUBSCRIPTION_KEY =
+  'connector-customObjectSubscription';
 
 export async function createCustomObjectSubscription(
   apiRoot: ByProjectKeyRequestBuilder,
@@ -14,7 +14,7 @@ export async function createCustomObjectSubscription(
     .subscriptions()
     .get({
       queryArgs: {
-        where: `key = "${CUSTOM_OBJECT_CREATE_SUBSCRIPTION_KEY}"`,
+        where: `key = "${CUSTOM_OBJECT_SUBSCRIPTION_KEY}"`,
       },
     })
     .execute();
@@ -24,7 +24,7 @@ export async function createCustomObjectSubscription(
 
     await apiRoot
       .subscriptions()
-      .withKey({ key: CUSTOM_OBJECT_CREATE_SUBSCRIPTION_KEY })
+      .withKey({ key: CUSTOM_OBJECT_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
           version: subscription.version,
@@ -37,7 +37,7 @@ export async function createCustomObjectSubscription(
     .subscriptions()
     .post({
       body: {
-        key: CUSTOM_OBJECT_CREATE_SUBSCRIPTION_KEY,
+        key: CUSTOM_OBJECT_SUBSCRIPTION_KEY,
         destination: {
           type: 'GoogleCloudPubSub',
           topic: topicName,
@@ -62,7 +62,7 @@ export async function deleteCustomObjectCreateSubscription(
     .subscriptions()
     .get({
       queryArgs: {
-        where: `key = "${CUSTOM_OBJECT_CREATE_SUBSCRIPTION_KEY}"`,
+        where: `key = "${CUSTOM_OBJECT_SUBSCRIPTION_KEY}"`,
       },
     })
     .execute();
@@ -72,7 +72,7 @@ export async function deleteCustomObjectCreateSubscription(
 
     await apiRoot
       .subscriptions()
-      .withKey({ key: CUSTOM_OBJECT_CREATE_SUBSCRIPTION_KEY })
+      .withKey({ key: CUSTOM_OBJECT_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
           version: subscription.version,
