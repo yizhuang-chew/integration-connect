@@ -35,20 +35,29 @@ export const post = async (request: Request, response: Response) => {
     const messageNotificationType = messageInput.notificationType;
     const messageResourceType = messageInput.resource.typeId;
     const messageType = messageInput.type;
-    logger.info(`MESSAGE: ${messageType}`)
+    logger.info(`MESSAGE: ${messageType}`);
 
-    // Get Custom Object - ## Handle if it's multiple messageTypes
-    const customObject = await customObjectController(messageNotificationType,messageResourceType,messageType);
+    // Get Custom Objects - Handle if it's a list of customObjects
+    const customObjects = await customObjectController(
+      messageNotificationType,
+      messageResourceType,
+      messageType
+    );
 
-    // Validation
-    validationController(messageInput, customObject);
+    // Process each customObject in the list
+    for (const customObject of customObjects) {
+      logger.info(`Processing customObject: ${customObject}`);
 
-    // Output Mapping
-    const destinationOutput = mappingController(messageInput, customObject);
+      // Validation
+      validationController(messageInput, customObject);
 
-    // Destination Call
-    await destinationCallController(destinationOutput, customObject);
+      // Output Mapping
+      const destinationOutput = mappingController(messageInput, customObject);
 
+      // Destination Call
+      await destinationCallController(destinationOutput, customObject);
+    }
+    
     response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
   } catch (error) {
     if (error instanceof CustomError) {

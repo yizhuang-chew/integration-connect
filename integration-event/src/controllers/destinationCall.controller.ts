@@ -16,7 +16,7 @@ export const destinationCallController = async (
   try {
     const accessToken = await authorizationController(customObject);
 
-    const destinationUrl = `${customObject.value.destinationUrl}`;
+    const destinationUrl = `${customObject.value.integration.destinationUrl}`;
     logger.info(`Sending request to: ${destinationUrl}`);
     logger.info('Request body:', output);
 

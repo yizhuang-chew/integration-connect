@@ -3,16 +3,16 @@ import { logger } from '../utils/logger.utils';
 
 // Function to use refresh token to get a new access token
 const refreshAccessToken = async (
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  tokenUrl: string
+  clientId?: string,
+  clientSecret?: string,
+  refreshToken?: string,
+  tokenUrl?: string
 ): Promise<string | null> => {
   const body = {
-    client_id: clientId,
-    client_secret: clientSecret,
-    refresh_token: refreshToken,
-    grant_type: 'refresh_token',
+    client_id: clientId || "",
+    client_secret: clientSecret || "",
+    refresh_token: refreshToken || "",
+    grant_type: 'refresh_token' || "",
   };
 
   try {
@@ -20,6 +20,10 @@ const refreshAccessToken = async (
     logger.info(clientSecret);
     logger.info(refreshToken);
     logger.info(tokenUrl);
+
+    if(!tokenUrl){
+      throw new Error(`Token URL is empty for Refresh Token`);
+    }
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
@@ -42,27 +46,25 @@ const refreshAccessToken = async (
 };
 
 async function getStoredAccessToken(
-  accessToken: string
+  accessToken?: string
 ): Promise<string | null> {
-  return accessToken;
+  return accessToken || "";
 }
 
 export const authorizationController = async (
   customObject: CustomObject
 ): Promise<string | null> => {
   let accessToken: string | null = '';
-  if (customObject.value.authType === 'refresh_token') {
+  if (customObject.value.auth.authType === 'refresh_token') {
     accessToken = await refreshAccessToken(
-      customObject.value.clientId,
-      customObject.value.clientSecret,
-      customObject.value.refreshToken,
-      customObject.value.authUrl
+      customObject.value.auth.clientId,
+      customObject.value.auth.clientSecret,
+      customObject.value.auth.refreshToken,
+      customObject.value.auth.authUrl
     );
-  } else if (customObject.value.authType === 'access_token') {
+  } else if (customObject.value.auth.authType === 'access_token') {
     logger.info('Auth Type = access_token');
-    accessToken = await getStoredAccessToken(
-      customObject.value.accessToken
-    );
+    accessToken = await getStoredAccessToken(customObject.value.auth.accessToken);
   }
   return accessToken;
 };
