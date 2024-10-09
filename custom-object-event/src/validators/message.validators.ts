@@ -61,7 +61,7 @@ export function doMessageValidation(request: Request) {
   }
 
   const resourceUserProvidedIdentifiers = messageBody.resourceUserProvidedIdentifiers;
-  if(resourceUserProvidedIdentifiers?.containerAndKey?.container !== "integration_layer"){
+  if(resourceUserProvidedIdentifiers?.containerAndKey?.container !== "integration-layer"){
     throw new CustomError(
       HTTP_STATUS_SUCCESS_ACCEPTED,
       `Custom Object change is not for integration layer.`
