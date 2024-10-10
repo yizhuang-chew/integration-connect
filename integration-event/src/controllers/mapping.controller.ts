@@ -19,7 +19,6 @@ export const mappingController = (
 ): Record<string, any> => {
   const output: Record<string, any> = {};
 
-  // Helper function to safely access nested properties, including wildcard support for arrays
   const getValueFromPath = (obj: any, path: string) => {
     const fieldPath = path.split('.');
     return fieldPath.reduce((acc: any, field: string) => {
@@ -40,7 +39,6 @@ export const mappingController = (
     }, obj);
   };
 
-  // Helper function to set a value at a nested path, handling array wildcards like `[*]`
   const setValueAtPath = (obj: Record<string, any>, path: string, value: any) => {
     const destFieldPath = path.split('.');
     let destObj = obj;
@@ -48,7 +46,6 @@ export const mappingController = (
     for (let i = 0; i < destFieldPath.length - 1; i++) {
       const field = destFieldPath[i];
 
-      // Handle array indexing and wildcard `[*]`
       const arrayMatch = field.match(/(.*)\[(\*|\d+)\]/);
       if (arrayMatch) {
         const arrayField = arrayMatch[1];
@@ -68,93 +65,68 @@ export const mappingController = (
       }
     }
 
-    // Set the final value at the correct location
     const finalField = destFieldPath[destFieldPath.length - 1];
     if (Array.isArray(destObj)) {
-      destObj.push(value); // Push value into the array
+      destObj.push(value);
     } else {
       destObj[finalField] = value;
     }
   };
 
-  // Iterate through the field mappings and map fields accordingly
   customObject.value.fieldsMapping.forEach((fieldMapping: FieldMapping) => {
     const { commercetoolsField, destinationField, defaultValue, transform } = fieldMapping;
 
-    // Check for missing commercetoolsField or destinationField
-    if (!commercetoolsField || !destinationField) {
-      logger.warn(`Missing field mapping: commercetoolsField=${commercetoolsField}, destinationField=${destinationField}`);
-      return; // Skip this mapping entry
+    if (!destinationField) {
+      throw new Error(`Missing destinationField for mapping: ${JSON.stringify(fieldMapping)}`);
     }
-
-    // Handle wildcard in the source field path (e.g., "product.prices[*].value")
-    const sourceFieldHasWildcard = commercetoolsField.includes('[*]');
-    const destinationFieldHasWildcard = destinationField.includes('[*]');
 
     let valuesToMap: any[] = [];
 
-    if (sourceFieldHasWildcard) {
-      // Split the path at the wildcard and process each element in the source array
-      const beforeWildcard = commercetoolsField.split('[*]')[0];
-      const afterWildcard = commercetoolsField.split('[*]')[1];
-      const arrayToMap = getValueFromPath(input, beforeWildcard);
+    if (defaultValue !== undefined) {
+      valuesToMap.push(defaultValue);
+    } else if (commercetoolsField) {
+      const sourceFieldHasWildcard = commercetoolsField.includes('[*]');
+      if (sourceFieldHasWildcard) {
+        const beforeWildcard = commercetoolsField.split('[*]')[0];
+        const afterWildcard = commercetoolsField.split('[*]')[1];
+        const arrayToMap = getValueFromPath(input, beforeWildcard);
 
-      if (Array.isArray(arrayToMap)) {
-        arrayToMap.forEach((arrayElement: any) => {
-          const valueToMap = getValueFromPath(arrayElement, afterWildcard.slice(1));
-          if (valueToMap !== undefined) {
-            valuesToMap.push(valueToMap);
-          } else {
-            logger.warn(`Missing field in source: ${commercetoolsField}`);
-          }
-        });
+        if (Array.isArray(arrayToMap)) {
+          arrayToMap.forEach((arrayElement: any) => {
+            const valueToMap = getValueFromPath(arrayElement, afterWildcard.slice(1));
+            if (valueToMap !== undefined) {
+              valuesToMap.push(valueToMap);
+            }
+          });
+        }
       } else {
-        logger.warn(`Expected array but got undefined or non-array value for: ${commercetoolsField}`);
+        const valueToMap = getValueFromPath(input, commercetoolsField);
+        if (valueToMap !== undefined) {
+          valuesToMap.push(valueToMap);
+        }
       }
     } else {
-      // No wildcard, handle as normal
-      const valueToMap = getValueFromPath(input, commercetoolsField);
-      if (valueToMap !== undefined) {
-        valuesToMap.push(valueToMap);
-      } else {
-        logger.warn(`Missing field in source: ${commercetoolsField}`);
-      }
+      throw new Error(`Missing commercetoolsField for mapping: ${JSON.stringify(fieldMapping)}`);
     }
 
-    // Use defaultValue if no value was found
-    if (valuesToMap.length === 0 && defaultValue !== undefined) {
-      valuesToMap.push(defaultValue);
-    }
-
-    // Transform values if a transform function is provided
     if (transform && typeof transform === 'string') {
       const transformFn = stringToFunction(transform);
       if (transformFn) {
         try {
           valuesToMap = valuesToMap.map((value) => transformFn(value));
         } catch (error) {
-          logger.error(`Error applying transform function for "${destinationField}":`, error);
+          logger.error(`Error applying transform for "${destinationField}":`, error);
         }
       }
     }
 
-    // Set values in the destination object
-    if (destinationFieldHasWildcard) {
-      if (valuesToMap.length === 1) {
-        // If there's only one value in the source but the destination expects an array
-        const wildcardDestinationField = destinationField.replace('[*]', `[0]`);
-        setValueAtPath(output, wildcardDestinationField, valuesToMap[0]);
-      } else {
-        // Handle multiple values mapping to multiple indices
-        valuesToMap.forEach((value, index) => {
-          const wildcardDestinationField = destinationField.replace('[*]', `[${index}]`);
-          setValueAtPath(output, wildcardDestinationField, value);
-        });
-      }
+    if (destinationField.includes('[*]')) {
+      valuesToMap.forEach((value, index) => {
+        const wildcardDestinationField = destinationField.replace('[*]', `[${index}]`);
+        setValueAtPath(output, wildcardDestinationField, value);
+      });
     } else {
-      if (valuesToMap.length > 0) {
-        setValueAtPath(output, destinationField, valuesToMap[0]);
-      }
+      setValueAtPath(output, destinationField, valuesToMap[0]);
     }
   });
 
