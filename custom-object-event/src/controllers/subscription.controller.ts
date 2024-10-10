@@ -2,7 +2,7 @@ import { logger } from '../utils/logger.utils';
 import { SubscriptionDraft } from '@commercetools/platform-sdk';
 import { createApiRoot } from '../client/create.client';
 // Define the possible commercetools event types
-type CommercetoolsEventType = 'Messages' | 'Changes';
+type CommercetoolsEventType = 'Message' | 'Change';
 // Define the message types (assuming it's an array of strings)
 type CommercetoolsEventMessageTypes = string[];
 import CustomError from '../errors/custom.error';
@@ -26,13 +26,13 @@ export const subscriptionController = async (
     const changes: { resourceTypeId: string }[] = [];
 
     // Handle event type based on 'Message' or 'Change'
-    if (commercetoolsEventType === 'Messages') {
+    if (commercetoolsEventType === 'Message') {
       // If the event type is 'Message', update the messages array
       messages.push({
         resourceTypeId: commercetoolsEvent, // Add the specific event
         types: commercetoolsEventMessageTypes, // Add the types if they exist
       });
-    } else if (commercetoolsEventType === 'Changes') {
+    } else if (commercetoolsEventType === 'Change') {
       // If the event type is 'Change', update the changes array
       changes.push({
         resourceTypeId: commercetoolsEvent, // Add the specific event
