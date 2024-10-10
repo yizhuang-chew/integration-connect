@@ -82,7 +82,7 @@ export const mappingController = (
 
     let valuesToMap: any[] = [];
 
-    if (defaultValue !== undefined) {
+    if (defaultValue) {
       valuesToMap.push(defaultValue);
     } else if (commercetoolsField) {
       const sourceFieldHasWildcard = commercetoolsField.includes('[*]');
@@ -90,6 +90,7 @@ export const mappingController = (
         const beforeWildcard = commercetoolsField.split('[*]')[0];
         const afterWildcard = commercetoolsField.split('[*]')[1];
         const arrayToMap = getValueFromPath(input, beforeWildcard);
+        logger.info("ARRAY",arrayToMap);
 
         if (Array.isArray(arrayToMap)) {
           arrayToMap.forEach((arrayElement: any) => {
