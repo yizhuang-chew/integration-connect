@@ -20,7 +20,7 @@ export const customObjectController = async (
       .withContainer({ container: 'integration-layer' })
       .get({
         queryArgs: {
-          where: `value(eventType="${messageNotificationType}") and value(event="${messageResourceType}") and value(eventMessageTypes="${messageType}")`,
+          where: `value(integration(eventType="${messageNotificationType}")) and value(integration(event="${messageResourceType}")) and value(integration(eventMessageTypes="${messageType}"))`,
         },
       })
       .execute();
